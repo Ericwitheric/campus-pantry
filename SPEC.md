@@ -103,18 +103,18 @@ No public users. No students-who-visit-the-pantry. No donors.
 
 | Layer | Choice | Rationale |
 |-------|--------|-----------|
-| Framework | **Next.js 15 (App Router)** | Modern DX, matches learning goal, supports static export. |
+| Framework | **Next.js 16 (App Router)** | Modern DX, matches learning goal, supports static export. Note: the create-next-app scaffold in July 2026 pulled `next@16.2.10` + `react@19.2.4`; App Router APIs are compatible with the v15 patterns the spec was originally written against, but new files should be validated against `node_modules/next/dist/docs/` per AGENTS.md. |
 | Rendering | **Static export** (`output: 'export'` in `next.config.ts`) | No auth, no DB, no dynamic data → all pre-built HTML. Hosts anywhere. |
 | Language | **TypeScript** (strict) | Fewer runtime bugs; portfolio value; guards content-model integrity. |
-| Styling | **Tailwind CSS v4** | Fast, utility-first, keeps a single design system in the config. |
-| Content authoring | **TypeScript config files + MDX** | Page copy in `.mdx`, resource links in `content/pages.ts`. |
+| Styling | **Tailwind CSS v4** | Design tokens live in `src/app/globals.css` inside an `@theme inline` block — Tailwind v4 auto-generates canonical utilities (`text-brand-red`, `bg-card`, `ring-border`) from the tokens. No `tailwind.config.ts` file. |
+| Content authoring | **TypeScript config files** | Page copy + resource links live in `src/content/pages.ts`. No MDX — the payload is small enough that plain TS is cleaner and simpler to typecheck. |
 | Icons | **lucide-react** | Tree-shakeable, matches clean aesthetic, free. |
 | Fonts | **Inter** (Google Fonts, self-hosted via `next/font`) | System-standard, readable, no license concerns. |
 | Deployment | **Vercel free tier** | Best Next.js DX, free auto-deploy, free HTTPS, free preview URLs. |
 | Repo | **GitHub** (public) | Auto-deploy trigger, portfolio visibility, free. |
 | Testing | **Playwright** (E2E smoke tests) | Right tool for static content site; verifies nav, links, mobile menu. |
 | Package manager | **pnpm** | Faster installs, disk-efficient. |
-| Node version | **20 LTS** | Vercel default; Next.js 15 supported. |
+| Node version | **20 LTS** | Vercel default; Next.js 16 supported. |
 
 **Rejected alternatives:**
 - Astro — technically leaner for a static content site, but user is learning Next.js.
@@ -423,7 +423,7 @@ export interface PageContent {
   slug: string;         // matches route
   title: string;
   category: 'Operations' | 'People' | 'Content';
-  heroImage: string;    // /public/hero/... path
+  heroImage: string;    // path served from public/, referenced as /illustrations/... (public/ is served at site root, so never prefix with /public)
   intro?: string;
   sections: AccordionSection[];
 }
@@ -541,10 +541,9 @@ campus-pantry/
 ├── package.json
 ├── playwright.config.ts
 ├── pnpm-lock.yaml
-├── postcss.config.js
+├── postcss.config.mjs
 ├── README.md                             # setup + deploy instructions
-├── tailwind.config.ts
-└── tsconfig.json
+└── tsconfig.json                         # (no tailwind.config.ts — Tailwind v4 tokens live in globals.css)
 ```
 
 ## Development Phases
@@ -565,6 +564,7 @@ Deadline: **2026-08-31** (~8 weeks from 2026-07-06 spec approval). Solo develope
 - **Ship signal:** home page pixel-close to design intent on desktop + mobile.
 
 ### Phase 2 — Nav (3 days)
+- **Single `src/content/nav.ts` is the source of truth** (per T5). Both `MegaMenu` (desktop dropdown) and `MobileNav` (fullscreen panel) render from the same data structure — no duplicated arrays, no drift between desktop and mobile navigation. Adding a page or renaming a category is one edit.
 - `MegaMenu` with categorized dropdown (Operations / People / Content).
 - Keyboard accessibility (Tab, Enter, Escape).
 - `MobileNav` fullscreen panel with same categorization.
@@ -572,9 +572,13 @@ Deadline: **2026-08-31** (~8 weeks from 2026-07-06 spec approval). Solo develope
 
 ### Phase 3 — Subpage template (3 days)
 - `PageHero`, `AccordionSection`, `ResourceCard`, `ResourceIcon`.
+- **Dynamic routing (per T6):** subpages render via a single `src/app/[slug]/page.tsx` (with `generateStaticParams` returning every slug from `content/pages.ts`), plus a nested `[slug]/[sub]/page.tsx` for `/storefront-management/inventory`. This replaces the earlier plan of 11 hand-written page files — one place to touch when adding a page or changing the subpage template.
+- **Accordion is CSS-first (per T2):** all section content renders in static HTML so search, screen readers, and no-JS clients see the full content. Collapse/expand uses `<details>` + `<summary>` (or an equivalent `aria-expanded` pattern) — no client-side JavaScript needed for basic collapse.
+- **Empty-section fallback built into `AccordionSection` in this phase, not deferred (per T7).** Section with zero resources renders a subtle "No resources yet — check back soon" state, not a broken empty accordion.
 - Wire to `content/types.ts` and one hardcoded page (`storefront-management`) as a test.
-- Verify accordion animation, card icons, external-link behavior.
-- **Ship signal:** Storefront Management page renders end-to-end from content config.
+- **Generate per-page Playwright specs against placeholder data (per T9)** — so Phase 6 can run them without writing them from scratch. Content fills in during Phase 4; the tests already exist.
+- Verify accordion open/close (with keyboard), card icons, external-link behavior.
+- **Ship signal:** Storefront Management page renders end-to-end from content config; per-page test skeleton in `tests/e2e/subpages.spec.ts` runs green against placeholder content.
 
 ### Phase 4 — Content pass, subpages (5-7 days)
 - Manager provides Google Doc / Sheet / YouTube URLs for each page (this is the critical-path handoff — start collecting Day 1 of Phase 4, ideally sooner).
@@ -590,13 +594,16 @@ Deadline: **2026-08-31** (~8 weeks from 2026-07-06 spec approval). Solo develope
 - Different layout from other subpages (no accordions).
 - **Ship signal:** onboarding page reads well top-to-bottom as a new hire.
 
-### Phase 6 — Polish + search + tests (4-5 days)
+### Phase 6 — Polish + search + tests (5-6 days, revised up per T13)
 - Install Pagefind (`pnpm add -D pagefind`); update build script to run Pagefind after `next build`.
 - Build `SearchButton` and `SearchModal` components (Cmd/Ctrl-K shortcut, focus trap, escape-to-close).
+- **Lazy-load Pagefind runtime via dynamic import** (per T12) so the search bundle only downloads when the user opens the modal; dev mode shows a graceful "run `pnpm build` to enable search" message instead of failing.
 - Verify search results navigate correctly and match snippets render with the query term highlighted.
-- Playwright smoke tests (see Testing Plan).
+- **Run** the Playwright suite generated during Phase 3 (per T9). This phase writes at most the search + a11y specs; per-page rendering specs already exist.
+- Add the 8 missing test specs per T10: keyboard nav on mega-menu, focus trap on search modal, screen-reader smoke, broken-URL pattern detection, `target="_blank"` + `rel="noopener noreferrer"` audit, 404 route, hero illustration alt-text audit, console-clean check.
+- **CI: add SVGO minify step + 20KB-per-illustration size budget (per T11).** Build fails if any illustration exceeds 20KB — forces conscious tradeoffs on illustration complexity.
 - Illustrations properly sized, alt text present, no layout shift on load.
-- Empty-state handling (a section with no resources — hide gracefully).
+- Empty-state handling (a section with no resources — hide gracefully). Note: `AccordionSection` empty-state fallback was already built in Phase 3 (per T7), not deferred here.
 - Fix broken external URLs discovered during testing.
 - Accessibility pass (keyboard nav, focus rings, aria labels on mega-menu and search modal).
 - **Ship signal:** all E2E tests green, no console errors, Lighthouse ≥ 90 on all axes, search returns real results.
@@ -613,13 +620,20 @@ Deadline: **2026-08-31** (~8 weeks from 2026-07-06 spec approval). Solo develope
 - Announce to staff via manager's channel.
 - **Ship signal:** launch URL shared with team; first staff member successfully lands on onboarding page.
 
-**Total: ~25 working days = 5 weeks of engineering + 2-3 weeks of manager review and content collection = comfortably within the 8-week window, with buffer for surprises.**
+**Total (post plan-eng-review): ~30 working days = 6 weeks of engineering + 2 weeks of manager review and content collection = fits the 8-week window with minimal slack.** See Critical-path risks below for the "if X slips, drop Y" order. Original estimate of "5 weeks + 2-3 weeks" was revised upward per T13 — Phase 6 was under-budgeted for the search + test + a11y + Lighthouse work stacked into one week.
 
 ### Critical-path risks
 
 1. **Content collection is the real bottleneck**, not code. If manager doesn't hand over URLs by end of week 3, launch slips. Mitigation: start collecting URLs on Day 1 alongside Phase 0. A shared Google Sheet listing every needed URL by page is the artifact.
 2. **Illustration consistency.** 12 unDraw SVGs need to feel like they belong together — same illustration style, same primary color (brand red `#C0392B`), similar composition weight. Budget 2-3 hours to browse and pick a coherent set before dropping them in. If manager later provides real pantry photos, swap them in per page — the `PageHero` component takes an image `src` prop, so it's a one-line content change.
 3. **Solo developer with intermediate experience.** Realistic pace. If Phase 3 (subpage template) takes >5 days, escalate — it's the load-bearing component and shouldn't sprawl.
+4. **Phase 6 risk concentration (per plan-eng-review T10-T12).** The original Phase 6 wraps Pagefind wiring, 8+ Playwright specs, illustration size budget CI, accessibility pass, and Lighthouse tuning — all inside a 4-5 day window. Two things go wrong here: any single item that slips (typical: Pagefind lazy-load edge cases or an a11y failure that requires component refactors) blows the whole phase, AND the phase touches every previous phase's output so bugs surface late. Mitigation: **shift test writing left**. Generate per-page Playwright specs during Phase 3 against placeholder data (T9) so Phase 6 is only running the suite + fixing, not writing it. Budget Phase 6 at 5-6 days, not 3-4.
+5. **Realistic timeline (per plan-eng-review T13).** Original spec says "5 weeks eng + 2-3 weeks review = comfortably within 8 weeks." Honest read is closer to **6 weeks eng + 2 weeks review** with no slack. If the calendar tightens, drop features in this order:
+   1. **Drop Pagefind search first.** Ship without site-wide search; Ctrl+F on a page is a real fallback for a small handbook. Search can ship in v1.1 the week after launch.
+   2. **Drop the deferred pages** (Supplies, Resources & Links) — ship the 10 originally-planned tiles only.
+   3. **Drop the illustration polish** — ship with plain colored panels instead of unDraw SVGs. Illustrations added in the first post-launch iteration.
+   Do NOT drop: onboarding page, accordion pattern, mobile responsiveness, or accessibility basics. These are load-bearing.
+6. **Public repo + Vercel preview URL leak (accepted, per plan-eng-review T14).** Every push to a branch generates a Vercel preview URL that's publicly reachable if guessed, and the source repo is public. This is an accepted cost — the spec's "no sensitive data" guarantee makes preview leaks a non-issue, and portfolio visibility from the public repo is the tradeoff we chose. If sensitive content ever lands on the site, flip the repo to private AND enable Vercel deployment protection before the next push.
 
 ## Acceptance Criteria
 
@@ -673,8 +687,8 @@ No unit tests. For a static content site, unit tests add noise. E2E covers the u
 | File | Purpose |
 |------|---------|
 | `next.config.ts` | `output: 'export'`, image config, base path if needed |
-| `tailwind.config.ts` | Color tokens, font family, container widths |
-| `src/app/layout.tsx` | Header + Footer wrapping all pages |
+| `src/app/globals.css` | Tailwind v4 `@theme inline` block — design tokens, dark palette via `.dark` variant |
+| `src/app/layout.tsx` | Header + Footer wrapping all pages, plus the theme-init script |
 | `src/app/page.tsx` | Home tile grid |
 | `src/app/[slug]/page.tsx` (multiple) | One per subpage — each pulls content from `content/pages.ts` |
 | `src/app/onboarding/page.tsx` | Special layout for onboarding |
@@ -708,3 +722,53 @@ Because there is no database and no user state:
 ## Related
 
 *(No prior issues — greenfield project. This spec is the source of truth.)*
+
+## NOT in scope (review-deferred)
+
+Items raised during the plan-eng-review and explicitly not addressed in this spec:
+
+- **Broken-link health monitoring** (D6). Manual link check in Phase 7 only. Manager can revoke Google Doc sharing; a volunteer will hit a "request access" wall. The complete solution is a nightly CI job that HEADs every external href; the spec is comfortable with the manual approach for v1.
+- **Search "Popular pages" hardcoded list** (outside voice #9). Three hardcoded links will drift as pages are added. The mega-menu already provides this; the search modal duplicates nav state. Acceptable for v1; the data-driven variant is a v2 fix.
+- **Footer "Last updated" semantics** (outside voice #10). The footer shows build timestamp, which staff will (reasonably) read as content freshness. Every Vercel rebuild — including no-content changes — bumps the date. No per-page "last reviewed" field. Acceptable for v1; per-page content review dates are a v2 addition.
+- **"Search popular pages" hardcoded list maintenance** is implicitly captured in D-above.
+- **Compost Tracking external tile has no fallback** (outside voice #3). If the Google Sheet is renamed or restricted, the home tile points to a dead link with no in-site replacement. Acceptable for v1; an in-site subpage with a fallback message is a v2.
+- **"Trivial 10-20 min" per deferred page** (outside voice #5). The spec's claim is generous; the real cost per deferred page is ~20-30 min including content, illustration (if new), test, and a11y pass. v2 timing estimate should be revised upward.
+
+## What already exists
+
+- **Phase 0 scaffold (committed)**: `package.json` (next@16.2.10, react@19.2.4, tailwindcss@^4), `next.config.ts` (`output: "export"`, `trailingSlash`, `images.unoptimized`), `src/app/layout.tsx` (Inter font, Header/Footer imports), `src/app/page.tsx` (placeholder home), `src/app/globals.css`, `src/components/{Header,Footer}`, `public/`, `out/` (build output), `.vercel/` (deployment metadata), `eslint.config.mjs`, `tsconfig.json`. Phase 0 is functionally complete: `campus-pantry.vercel.app` returns the placeholder home page.
+- **AGENTS.md** in repo: warns "This is NOT the Next.js you know — APIs, conventions, and file structure may all differ." The spec's Next 15 references are suspect on this basis; the review resolved this in D2 (update spec to Next 16).
+- **The repo-level pattern is a static-export + Vercel pipeline** that the spec describes. No existing code is being reused; this is greenfield, and the design doc check is the source of truth.
+
+## Implementation Tasks (synthesized from review)
+
+- [ ] **T1 (P1, human: ~1h / CC: ~30min)** — spec — Update SPEC.md tech stack to Next.js 16 + React 19; audit App Router references for v16 validity
+- [ ] **T2 (P1, human: ~1h / CC: ~30min)** — subpage — Render all accordion content in static HTML; collapse via CSS+aria-expanded at runtime
+- [ ] **T3 (P3, human: ~1min / CC: ~30s)** — spec — Fix PageContent.heroImage doc comment: drop /public prefix
+- [ ] **T4 (P1, human: ~1h / CC: ~30min)** — design-system — Adopt Tailwind v4 design tokens in globals.css via @theme; remove tailwind.config.ts
+- [ ] **T5 (P1, human: ~2h / CC: ~30min)** — nav — Single src/content/nav.ts as source of truth; MegaMenu and MobileNav both render from it
+- [ ] **T6 (P1, human: ~1h / CC: ~30min)** — routing — Collapse 11 subpage page.tsx into a single dynamic [category]/[slug]/page.tsx driven by content/pages.ts
+- [ ] **T7 (P1, human: ~30min / CC: ~10min)** — subpage — Build empty-section fallback into AccordionSection from Phase 3; ship the test in Phase 3 not Phase 6
+- [ ] **T8 (P1, human: ~0 / CC: ~5min)** — content — Drop MDX from SPEC.md tech stack; use TypeScript config only
+- [ ] **T9 (P1, human: ~1h / CC: ~30min)** — tests — Generate per-page Playwright specs in Phase 3 against placeholder data; content fills in during Phase 4
+- [ ] **T10 (P1, human: ~3h / CC: ~1h)** — tests — Add 8 missing Playwright specs: keyboard nav, focus trap, screen reader smoke, broken-URL pattern, target=_blank, 404 page, hero alt, console clean
+- [ ] **T11 (P1, human: ~1h / CC: ~30min)** — perf — Add SVGO minify step + 20KB-per-illustration size budget in CI; fail build on violation
+- [ ] **T12 (P1, human: ~30min / CC: ~15min)** — search — Lazy-load Pagefind via dynamic import on first search-icon click; dev-mode shows graceful "build to search" message
+- [ ] **T13 (P1, human: ~1h / CC: ~30min)** — spec — Update SPEC.md Critical-path risks: realistic timeline, Phase 6 risk concentration, explicit "if X slips, drop Y" priority order
+- [ ] **T14 (P3, human: ~5min / CC: ~1min)** — spec — Note in SPEC.md that the public repo + Vercel preview URL leak is an accepted cost (portfolio value over preview URL privacy)
+
+## GSTACK REVIEW REPORT
+
+| Review | Trigger | Why | Runs | Status | Findings |
+|--------|---------|-----|------|--------|----------|
+| CEO Review | `/plan-ceo-review` | Scope & strategy | 0 | — | — |
+| Codex Review | `/codex review` | Independent 2nd opinion | 0 | — | — |
+| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 1 | ISSUES_OPEN | 14 issues, 0 critical gaps |
+| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
+| DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
+
+- **CODEX:** Codex not installed; outside voice ran as a Claude subagent. 11 additional findings surfaced; user triaged to A (timeline + Phase 6 risk in spec) and B-public (accept the leak).
+- **CROSS-MODEL:** No prior reviews to compare.
+- **VERDICT:** ENG REVIEW ISSUES_OPEN — 14 issues raised, all triaged. Ready to implement; review record persisted in `~/.gstack/projects/Campus-Pantry/tasks-eng-review-*.jsonl`.
+
+NO UNRESOLVED DECISIONS
