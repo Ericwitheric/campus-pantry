@@ -252,6 +252,8 @@ Groups larger than five people: we recommend organizing a food drive instead of 
     slug: "teaching-kitchen",
     title: "Teaching Kitchen",
     category: "Content",
+    heroImage: "/hero/teaching-kitchen.jpg",
+    heroStyle: "photo",
     intro:
       "A campus-community cooking and education space attached to the pantry — used for cooking demonstrations, educational classes, and hands-on food-prep sessions that connect pantry ingredients to student wellness.",
     sections: [
