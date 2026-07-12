@@ -138,8 +138,110 @@ Campus Pantry's contribution — direct food security work — sits within **SDG
     ],
   },
 
+  {
+    slug: "faqs",
+    title: "Staff FAQs",
+    category: "People",
+    intro:
+      "Scripted answers for staff replying to visitor, donor, media, and volunteer inquiries. Match the tone shown here when responding via email or at the front desk.",
+    sections: [
+      {
+        id: "schedule",
+        heading: "What is the schedule for the pantry?",
+        body: `The pantry is open Monday–Friday, 10 am–5 pm to distribute food. Staff and faculty hours are Monday, 12 pm–5 pm. In summer, student hours shift to Monday, Wednesday, and Friday, 11 am–4 pm. The pantry is closed if the campus is closed.
+
+For live updates, check [Facebook](https://www.facebook.com/UMDCampusPantry) or the [Campus Pantry website](http://campuspantry.umd.edu/).`,
+      },
+      {
+        id: "location",
+        heading: "Where is the pantry located?",
+        body: `Ground floor of the South Campus Dining Hall at 7093 Preinkert Drive, College Park, MD 20742. The visitor entrance is along the side of the building, below the cafe and convenience store.`,
+      },
+      {
+        id: "appointment",
+        heading: "Can I schedule an individual appointment?",
+        body: `Yes. Email [campuspantry@umd.edu](mailto:campuspantry@umd.edu) and someone will meet you at the pantry. UMD staff and faculty are limited to two pantry visits per month.`,
+      },
+      {
+        id: "qualifications",
+        heading: "What qualifications are needed to access the pantry?",
+        body: `An active University of Maryland ID. Bring it every visit, even if you've been before. **No proof of income or financial status is required** — self-disclosure of need is enough.`,
+      },
+      {
+        id: "drop-off-donation",
+        heading: "How do I drop off a food donation?",
+        body: `Bring donations to the pantry Monday–Friday, 10 am–5 pm. Non-perishable food items only for drop-in. Medications (vitamin supplements, cough syrup, cough drops, allergy medication, other over-the-counter drugs) are not accepted.
+
+For details on what's most needed, see "What items are needed at the pantry?" below.`,
+      },
+      {
+        id: "pickup-donation",
+        heading: "Can I schedule a pickup for my food donation?",
+        body: `Yes. The pantry team collects donations from campus on **Monday afternoons, 1–4 pm**. To schedule:
+
+1. Email [campuspantry@umd.edu](mailto:campuspantry@umd.edu) 24–48 hours in advance
+2. Include a phone number for the pickup window
+3. Bring the donation to the curb outside your building so it's accessible by car
+4. Organize items into boxes or containers for easy transport
+5. Help load the donation into the vehicle
+
+If Monday doesn't work, drop-off during normal hours (Monday–Friday, 10 am–5 pm) is preferred.`,
+      },
+      {
+        id: "financial-contribution",
+        heading: "How do I make a financial contribution?",
+        body: `Use the [Campus Pantry giving page](https://advancement.umd.edu/giving/fund.php?name=campus-pantry) to donate by credit card and receive an instant receipt. **Monetary donations are not accepted on-site** — direct all financial contributions through the giving link.`,
+      },
+      {
+        id: "items-needed",
+        heading: "What items are needed at the pantry?",
+        body: `Reusable bags (cloth or sturdy plastic) are always welcome. Non-perishable food items in demand:
+
+- Cooking ingredients (flour, spices, etc.)
+- Canned fish, poultry, vegetables, and beans (no salt added preferred)
+- Canned fruit (in juice / no sugar added preferred)
+- Dry pasta, rice, cereal, or oatmeal
+- Pasta sauce, peanut butter, jelly, or jam
+- Baby food or formula
+- Non-fat dry or canned milk
+- Mixed nuts, dried fruit
+
+Hygiene items are also accepted: shampoo, soap, diapers, deodorant, paper towels, feminine hygiene items.`,
+      },
+      {
+        id: "perishable-expired",
+        heading: "Do you accept perishable or expired food?",
+        body: `Yes, as long as items are in the **original sealed packaging** — we make the final call on whether an item is servable once it arrives. **No dented cans or damaged packaging**, please.`,
+      },
+      {
+        id: "food-drive",
+        heading: "How do I organize a food drive for the pantry?",
+        body: `Any office or student organization can run a food drive. Suggested steps:
+
+1. Pick a donation collection site in your office or common space (front desk, central room)
+2. Repurpose a supply box to collect donations and label it clearly
+3. Promote via staff meetings, events, posters, flyers, or email
+4. Optional: run a competition or incentive to boost participation
+5. When collection wraps, schedule a Monday pickup (1–4 pm) or drop off at the pantry directly (Monday–Friday, 10 am–5 pm)`,
+      },
+      {
+        id: "media-filming",
+        heading: "I'm a journalist or student working on a story — can I film during a distribution day?",
+        body: `No filming during open hours. **Visitor confidentiality** is a core operating principle: no student staff or visitors can appear on camera during distribution.
+
+Email [campuspantry@umd.edu](mailto:campuspantry@umd.edu) to arrange an interview or a walkthrough tour outside of distribution hours. Staff can provide interviews and answer questions off-shift.`,
+      },
+      {
+        id: "volunteer",
+        heading: "How can I volunteer at the pantry?",
+        body: `Individual volunteers: email [campuspantry@umd.edu](mailto:campuspantry@umd.edu) or check [Terps for Change](https://stamp.umd.edu/get_involved/leadership_community_servicelearning/terps_change) for volunteer opportunities.
+
+Groups larger than five people: we recommend organizing a food drive instead of on-site shifts. Space is limited, and drives have more impact than a large group volunteering for a single shift.`,
+      },
+    ],
+  },
+
   // Placeholder pages — full content lands per-page in Phase 4.
-  { slug: "faqs",                            title: "Staff FAQs",           category: "People",     sections: [] },
   { slug: "storefront-management",           title: "Storefront Management",category: "Operations", sections: [] },
   { slug: "storefront-management/inventory", title: "Storefront Inventory", category: "Operations", sections: [] },
   { slug: "volunteers",                      title: "Volunteers",           category: "People",     sections: [] },
@@ -149,6 +251,24 @@ Campus Pantry's contribution — direct food security work — sits within **SDG
   { slug: "teaching-kitchen",                title: "Teaching Kitchen",     category: "Content",    sections: [] },
   { slug: "supplies",                        title: "Supplies",             category: "Operations", sections: [] },
   { slug: "resources",                       title: "Resources & Links",    category: "Content",    sections: [] },
+  // TODO(onboarding): manager is sending onboarding videos to embed. Planned
+  // sections: Welcome & Values, Schedule, Meetings & Shift Attendance,
+  // Timesheets & Pay, Job Expectations (regular / shift lead / supervisor /
+  // manager), Workplace Conduct, Social Media Use, Apparel Guidelines,
+  // Feedback & Behavior, Safety Basics.
+  //
+  // Confirmed Social Media Use body content (approved by manager, save for
+  // when we build the page):
+  //
+  //   Official Pantry messages should only be shared through approved social
+  //   media accounts, typically as part of an individual's outlined job
+  //   responsibilities. Exceptions include promoting job announcements,
+  //   encouraging participation in Giving Day and other development
+  //   activities, and promoting approved initiatives.
+  //
+  //   Campus guidelines for social media use for staff who are publishing
+  //   and commenting on behalf of a UMD-affiliated account are available at
+  //   https://brand.umd.edu/social-media-guidelines
   { slug: "onboarding",                      title: "Staff Onboarding",     category: "People",     sections: [] },
 ];
 
