@@ -17,15 +17,18 @@ export function AccordionSection({
   const hasContent = Boolean(section.intro || section.body || hasResources);
 
   return (
-    <details id={section.id} className="group border-b border-border">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-base font-bold uppercase tracking-wide text-fg transition hover:text-brand-red md:text-lg [&::-webkit-details-marker]:hidden">
+    <details
+      id={section.id}
+      className="group border-t border-dashed border-border first:border-t-0"
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-border py-6 text-lg font-bold uppercase tracking-widest text-fg transition hover:text-brand-red md:py-8 md:text-xl [&::-webkit-details-marker]:hidden">
         <span>{section.heading}</span>
         <ChevronDown
           aria-hidden
-          className="h-5 w-5 flex-shrink-0 text-muted transition group-open:rotate-180 group-hover:text-brand-red"
+          className="h-5 w-5 flex-shrink-0 text-muted transition group-open:rotate-180 group-hover:text-brand-red md:h-6 md:w-6"
         />
       </summary>
-      <div className="space-y-4 pb-8 pt-2">
+      <div className="space-y-4 pb-10 pt-6">
         {section.intro && (
           <p className="leading-relaxed text-fg">{section.intro}</p>
         )}

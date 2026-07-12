@@ -52,7 +52,7 @@ export default async function Subpage({ params }: PageProps) {
             illustration={page.heroImage}
           />
           <div className="mx-auto max-w-280 px-6 pb-16 md:px-8 md:pb-24">
-            <div className="border-t border-border">
+            <div className="border-b border-dashed border-border">
               {page.sections.map((section) => (
                 <AccordionSection key={section.id} section={section} />
               ))}
