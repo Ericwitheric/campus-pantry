@@ -15,8 +15,14 @@ export interface Resource {
 export interface AccordionSection {
   id: string;
   heading: string;
+  // Short lead-in shown above body/resources; plain text.
   intro?: string;
-  resources: Resource[];
+  // Rich markdown body: headings, bullets, links, blockquotes, bold, italic.
+  // Rendered via react-markdown in AccordionSection.tsx.
+  body?: string;
+  // Link cards. Some sections (About / Staff FAQs) have body only, no cards;
+  // Storefront Management etc. will have cards only.
+  resources?: Resource[];
 }
 
 export type PageCategory = "Operations" | "People" | "Content";
@@ -25,7 +31,10 @@ export interface PageContent {
   slug: string;
   title: string;
   category: PageCategory;
-  heroImage: string;
+  // Path served from public/ (e.g. /illustrations/about.svg).
+  // Optional because most pages have no illustration yet — added per-page
+  // in Phase 4 as unDraw SVGs are picked.
+  heroImage?: string;
   intro?: string;
   sections: AccordionSection[];
 }
