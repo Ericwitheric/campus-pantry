@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { AccordionSection as AccordionSectionType } from "@/content/types";
+import { VideoEmbed } from "./VideoEmbed";
 
 // CSS-first collapsible section (details/summary per T2 in SPEC.md).
 // All content is in static HTML — search indexing, screen readers, and
@@ -14,7 +15,11 @@ export function AccordionSection({
 }) {
   const hasResources =
     Array.isArray(section.resources) && section.resources.length > 0;
-  const hasContent = Boolean(section.intro || section.body || hasResources);
+  const hasVideos =
+    Array.isArray(section.videos) && section.videos.length > 0;
+  const hasContent = Boolean(
+    section.intro || section.body || hasVideos || hasResources,
+  );
 
   return (
     <details
@@ -89,6 +94,13 @@ export function AccordionSection({
             >
               {section.body}
             </ReactMarkdown>
+          </div>
+        )}
+        {hasVideos && (
+          <div className="grid gap-6 md:grid-cols-2">
+            {section.videos!.map((video) => (
+              <VideoEmbed key={video.youtubeId} {...video} />
+            ))}
           </div>
         )}
         {/* T7: empty-section fallback — never a broken empty accordion */}

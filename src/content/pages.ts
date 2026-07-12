@@ -248,7 +248,47 @@ Groups larger than five people: we recommend organizing a food drive instead of 
   { slug: "appointments",                    title: "Staff Appointments",   category: "People",     sections: [] },
   { slug: "donations",                       title: "Donations",            category: "Operations", sections: [] },
   { slug: "compost-tracking",                title: "Compost Tracking",     category: "Operations", sections: [] },
-  { slug: "teaching-kitchen",                title: "Teaching Kitchen",     category: "Content",    sections: [] },
+  {
+    slug: "teaching-kitchen",
+    title: "Teaching Kitchen",
+    category: "Content",
+    intro:
+      "A campus-community cooking and education space attached to the pantry — used for cooking demonstrations, educational classes, and hands-on food-prep sessions that connect pantry ingredients to student wellness.",
+    sections: [
+      {
+        id: "about-teaching-kitchen",
+        heading: "About the Teaching Kitchen",
+        body: `The Teaching Kitchen is open to everyone in the UMD campus community.
+
+**What it's for.** Cooking demonstrations, educational classes, and hands-on food-prep sessions.
+
+**What it's not for.** Students who forgot to make their lunch or want to stop between classes — the kitchen isn't a walk-in dining option.
+
+**One rule for cooking demos.** **2 – 3 of the main ingredients must come from the pantry.** Demos exist to show what pantry ingredients can turn into.`,
+      },
+      {
+        id: "cooking-demo-videos",
+        heading: "Cooking Demonstration Videos",
+        intro:
+          "Recorded demos featuring pantry ingredients, filmed in the Teaching Kitchen with Campus Pantry staff.",
+        videos: [
+          {
+            youtubeId: "Ez_V_DEnosc",
+            title: "Zero Waste Butternut Squash Soup Demo",
+          },
+          {
+            youtubeId: "lnECbK0aU9E",
+            title: "Chicken Pasta Bake Demo",
+          },
+        ],
+      },
+      {
+        id: "how-to-reserve",
+        heading: "How to Reserve",
+        body: `Contact the current manager to reserve the Teaching Kitchen for a demonstration or class. Include the date, expected number of attendees, and the pantry ingredients you're planning to feature.`,
+      },
+    ],
+  },
   { slug: "supplies",                        title: "Supplies",             category: "Operations", sections: [] },
   { slug: "resources",                       title: "Resources & Links",    category: "Content",    sections: [] },
   // TODO(onboarding): manager is sending onboarding videos to embed. Planned

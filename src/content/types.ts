@@ -12,14 +12,26 @@ export interface Resource {
   type: ResourceType;
 }
 
+export interface VideoEmbed {
+  // 11-char YouTube video ID (from a URL like watch?v=<id> or youtu.be/<id>).
+  // Storing the ID rather than the URL keeps the data clean and lets us swap
+  // to youtube-nocookie.com automatically for privacy.
+  youtubeId: string;
+  title: string;
+  description?: string;
+}
+
 export interface AccordionSection {
   id: string;
   heading: string;
-  // Short lead-in shown above body/resources; plain text.
+  // Short lead-in shown above body/videos/resources; plain text.
   intro?: string;
   // Rich markdown body: headings, bullets, links, blockquotes, bold, italic.
   // Rendered via react-markdown in AccordionSection.tsx.
   body?: string;
+  // Inline video embeds (YouTube), rendered below body, above resources.
+  // Responsive 16:9 grid — 1 col mobile, 2 col desktop.
+  videos?: VideoEmbed[];
   // Link cards. Some sections (About / Staff FAQs) have body only, no cards;
   // Storefront Management etc. will have cards only.
   resources?: Resource[];
