@@ -31,10 +31,16 @@ export interface PageContent {
   slug: string;
   title: string;
   category: PageCategory;
-  // Path served from public/ (e.g. /illustrations/about.svg).
-  // Optional because most pages have no illustration yet — added per-page
-  // in Phase 4 as unDraw SVGs are picked.
+  // Path served from public/ (e.g. /hero/about.jpeg or /illustrations/about.svg).
+  // Optional because most pages have no image yet.
   heroImage?: string;
+  // How to render the hero image.
+  //   "photo"        — full-bleed background photo + dark overlay + centered
+  //                    white title (used for real pantry photos)
+  //   "illustration" — side-by-side layout with the image on the right (used
+  //                    for unDraw SVGs once we pick them)
+  // Defaults to the plain text hero when neither heroImage nor heroStyle is set.
+  heroStyle?: "photo" | "illustration";
   intro?: string;
   sections: AccordionSection[];
 }

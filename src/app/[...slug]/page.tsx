@@ -49,7 +49,8 @@ export default async function Subpage({ params }: PageProps) {
             category={page.category}
             title={page.title}
             intro={page.intro}
-            illustration={page.heroImage}
+            heroImage={page.heroImage}
+            heroStyle={page.heroStyle}
           />
           <div className="mx-auto max-w-280 px-6 pb-16 md:px-8 md:pb-24">
             <div className="border-b border-dashed border-border">

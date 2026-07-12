@@ -27,6 +27,8 @@ export const pages: PageContent[] = [
     slug: "about",
     title: "About The Pantry",
     category: "Content",
+    heroImage: "/hero/about.jpeg",
+    heroStyle: "photo",
     intro:
       "Campus Pantry is a UMD food security program in the Department of Dining Services, staffed by paid students and open to all UMD students, staff, and faculty. Below: where to find us, why we exist, what we do, and how our work supports UMD's sustainability commitments.",
     sections: [
